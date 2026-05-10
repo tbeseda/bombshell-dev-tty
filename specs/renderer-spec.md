@@ -622,22 +622,44 @@ floating?: {
   y?: number;
   expand?: { width?: number; height?: number };
   parent?: number;
-  attachTo?: number;
+  attachTo?: "none" | "parent" | "element" | "root";
   attachPoints?: {
-    element?: number;
-    parent?: number;
+    element?:
+      | "left-top"
+      | "left-center"
+      | "left-bottom"
+      | "center-top"
+      | "center-center"
+      | "center-bottom"
+      | "right-top"
+      | "right-center"
+      | "right-bottom";
+    parent?:
+      | "left-top"
+      | "left-center"
+      | "left-bottom"
+      | "center-top"
+      | "center-center"
+      | "center-bottom"
+      | "right-top"
+      | "right-center"
+      | "right-bottom";
   };
-  pointerCaptureMode?: number;
-  clipTo?: number;
+  pointerCaptureMode?: "capture" | "passthrough";
+  clipTo?: "none" | "attached-parent";
   zIndex?: number;
 }
 ```
 
-This shape extends the earlier floating surface in two ways. First,
-`attachPoints` is structured as separate element and parent anchor values
-instead of a single packed enum. Second, the surface exposes additional Clay
-floating controls that were previously unavailable at the TypeScript layer:
-`expand`, `pointerCaptureMode`, and `clipTo`.
+The `floating` object configures Clay floating layout behavior. `x` and `y`
+provide the floating offset. `expand` expands the floating bounds. `parent`
+identifies the target element when `attachTo` is `"element"`. `attachTo` selects
+whether the element is attached to no target, its parent, an element, or the
+layout root. `attachPoints.element` describes the anchor on the floating
+element, and `attachPoints.parent` describes the anchor on the attached target.
+`pointerCaptureMode` controls whether the floating element captures pointer
+input or lets it pass through, `clipTo` controls inherited clipping, and
+`zIndex` controls floating order.
 
 The `text()` constructor currently accepts: `color`, `fontSize`,
 `letterSpacing`, `lineHeight`, and attribute flags (`bold`, `italic`,

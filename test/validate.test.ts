@@ -83,7 +83,7 @@ describe("validate", () => {
     expect(validate([
       open("x", {
         floating: {
-          attachPoints: { element: 4, parent: 4 },
+          attachPoints: { element: "center-center", parent: "center-center" },
         },
       }),
       close(),
@@ -95,8 +95,8 @@ describe("validate", () => {
       open("x", {
         floating: {
           expand: { width: 2, height: 3 },
-          pointerCaptureMode: 1,
-          clipTo: 1,
+          pointerCaptureMode: "passthrough",
+          clipTo: "attached-parent",
           zIndex: 1024,
         },
       }),
@@ -104,7 +104,12 @@ describe("validate", () => {
     ])).toBe(true);
   });
 
-  it("rejects numeric floating attachPoints legacy shape", () => {
+  it("rejects numeric floating enum values", () => {
+    expect(validate([
+      // deno-lint-ignore no-explicit-any
+      open("x", { floating: { attachTo: 3 as any } }),
+      close(),
+    ])).toBe(false);
     expect(validate([
       // deno-lint-ignore no-explicit-any
       open("x", { floating: { attachPoints: 4 as any } }),

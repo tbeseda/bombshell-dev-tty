@@ -1,15 +1,6 @@
 import { beforeEach, describe, expect, it } from "./suite.ts";
 import { createTerm, type Term } from "../term.ts";
-import {
-  ATTACH_POINT,
-  ATTACH_TO,
-  close,
-  fixed,
-  grow,
-  open,
-  rgba,
-  text,
-} from "../ops.ts";
+import { close, fixed, grow, open, rgba, text } from "../ops.ts";
 import { print } from "./print.ts";
 
 const decode = (bytes: Uint8Array) => new TextDecoder().decode(bytes);
@@ -224,10 +215,10 @@ describe("term", () => {
             floating: {
               x: 3,
               y: 1,
-              attachTo: ATTACH_TO.ROOT,
+              attachTo: "root",
               attachPoints: {
-                element: ATTACH_POINT.CENTER_CENTER,
-                parent: ATTACH_POINT.CENTER_CENTER,
+                element: "center-center",
+                parent: "center-center",
               },
             },
           }),
