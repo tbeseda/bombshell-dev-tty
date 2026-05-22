@@ -41,10 +41,21 @@ export interface ElementInfo {
 const WINDOWS_WRAP_DISABLE = new Uint8Array([0x1b, 0x5b, 0x3f, 0x37, 0x6c]);
 const WINDOWS_WRAP_ENABLE = new Uint8Array([0x1b, 0x5b, 0x3f, 0x37, 0x68]);
 
+function windowsFullscreenHandlingDisabled(): boolean {
+  let diagnostics = (globalThis as typeof globalThis & {
+    __claytermDiagnostics__?: {
+      disableWindowsFullscreenHandling?: boolean;
+    };
+  }).__claytermDiagnostics__;
+
+  return diagnostics?.disableWindowsFullscreenHandling === true;
+}
+
 function normalizeWindowsLineOutput(output: Uint8Array): Uint8Array {
-  // Windows fullscreen line-mode output needs an explicit home cursor move and
-  // CRLF row separators; bare LF can leave the cursor in the wrong column and
-  // visually clip later rows in some terminal stacks.
+  // Empirically, Deno-on-Windows fullscreen redraws were more reliable when
+  // line-mode output began with a home cursor move and used CRLF row
+  // separators. Bare LF left later rows visually clipped in the tested
+  // terminal stack, while localized redraws could still reveal the content.
   let extra = 0;
   for (let i = 0; i < output.length; i++) {
     if (output[i] === 0x0a && (i === 0 || output[i - 1] !== 0x0d)) {
@@ -79,8 +90,9 @@ function normalizeWindowsLineOutput(output: Uint8Array): Uint8Array {
 }
 
 function wrapWindowsFullscreenOutput(output: Uint8Array): Uint8Array {
-  // Disabling autowrap around a fullscreen frame avoids Windows terminal
-  // redraw quirks observed at the right edge.
+  // Preserve an explicit wrap-state boundary around fullscreen frames on
+  // Windows. In the tested Deno path this avoided redraw glitches at the right
+  // edge even though the same scene rendered cleanly in Node.
   // xterm defines CSI ? 7 h / CSI ? 7 l as auto-wrap on/off.
   let wrapped = new Uint8Array(
     WINDOWS_WRAP_DISABLE.length + output.length + WINDOWS_WRAP_ENABLE.length,
@@ -123,6 +135,10 @@ export interface Term {
   render(ops: Op[], options?: RenderOptions): RenderResult;
 }
 
+let runtimeIsWindows = (globalThis as typeof globalThis & {
+  Deno?: { build?: { os?: string } };
+}).Deno?.build?.os === "windows";
+
 export async function createTerm(options: TermOptions): Promise<Term> {
   let { width, height } = options;
   let native = await createTermNative(width, height);
@@ -138,12 +154,13 @@ export async function createTerm(options: TermOptions): Promise<Term> {
       let mode = options?.mode === "line" ? 1 : 0;
       let row = options?.row ?? 1;
       let autoLineMode = false;
-      let windowsFullscreen = row === 1 && Deno.build.os === "windows";
+      let windowsFullscreen = row === 1 && runtimeIsWindows &&
+        !windowsFullscreenHandlingDisabled();
 
-      // Windows terminals have historically been less reliable with many
-      // absolute cursor CUP updates in full-screen diff mode. Use the
-      // line-oriented render path by default on Windows for fullscreen
-      // layouts to improve redraw reliability.
+      // Use the line-oriented render path by default for Windows fullscreen
+      // renders. This was required for Deno to avoid
+      // clipped rows during fullscreen redraw, while the equivalent Node path
+      // did not show the same failure.
       if (mode === 0 && options?.mode === undefined && windowsFullscreen) {
         mode = 1;
         autoLineMode = true;
