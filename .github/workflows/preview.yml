@@ -39,7 +39,9 @@ jobs:
           node-version: 24
 
       - name: Build NPM
-        run: deno task build:npm ${{steps.vars.outputs.version}}
+        run: deno task build:npm "${STEPS_VARS_OUTPUTS_VERSION}"
+        env:
+          STEPS_VARS_OUTPUTS_VERSION: ${{steps.vars.outputs.version}}
 
       - name: Publish Preview Versions
         run: npx pkg-pr-new publish './build/npm'
