@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   verify-jsr:
@@ -79,6 +78,9 @@ jobs:
   publish-npm:
     needs: [verify-jsr, verify-npm]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Setup Node
@@ -99,6 +101,9 @@ jobs:
   publish-jsr:
     needs: [verify-jsr, verify-npm]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: checkout
