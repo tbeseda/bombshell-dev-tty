@@ -41,7 +41,7 @@ const z85 = encodeZ85(compressed);
 const source = `import{brotliDecompressSync}from"node:zlib";
 const Z="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#";
 const T=new Uint8Array(128);for(let i=0;i<85;i++)T[Z.charCodeAt(i)]=i;
-function d(s,n){const b=new Uint8Array(n);let o=0;for(let i=0;i<s.length&&o<n;i+=5){const v=T[s.charCodeAt(i)]*52200625+T[s.charCodeAt(i+1)]*614125+T[s.charCodeAt(i+2)]*7225+T[s.charCodeAt(i+3)]*85+T[s.charCodeAt(i+4)];if(o<n)b[o++]=Math.floor(v/16777216);if(o<n)b[o++]=Math.floor(v/65536)%256;if(o<n)b[o++]=Math.floor(v/256)%256;if(o<n)b[o++]=v%256;}return b;}
+function d(s:string,n:number){const b=new Uint8Array(n);let o=0;for(let i=0;i<s.length&&o<n;i+=5){const v=T[s.charCodeAt(i)]*52200625+T[s.charCodeAt(i+1)]*614125+T[s.charCodeAt(i+2)]*7225+T[s.charCodeAt(i+3)]*85+T[s.charCodeAt(i+4)];if(o<n)b[o++]=Math.floor(v/16777216);if(o<n)b[o++]=Math.floor(v/65536)%256;if(o<n)b[o++]=Math.floor(v/256)%256;if(o<n)b[o++]=v%256;}return b;}
 const compressed=d(${JSON.stringify(z85)},${compressed.byteLength});
 export const compiled=await WebAssembly.compile(brotliDecompressSync(compressed));
 `;
