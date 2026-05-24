@@ -1,10 +1,10 @@
-name: CodSpeed
+name: Benchmark
 
 on:
   push:
-    branches: main
+    branches: [main]
   pull_request:
-    branches: main
+    branches: [main]
   # `workflow_dispatch` allows CodSpeed to trigger backtest
   # performance analysis in order to generate initial data.
   workflow_dispatch:
@@ -38,10 +38,10 @@ jobs:
         run: make
 
       - name: Install dependencies
-        run: npm install
+        run: deno install
 
       - name: Run benchmarks
         uses: CodSpeedHQ/action@v4
         with:
           mode: simulation
-          run: npx vitest bench --run
+          run: deno task bench
