@@ -28,6 +28,7 @@
     "include": ["*.ts"],
     "exclude": ["!wasm.ts"]
   },
+  "nodeModulesDir": "auto",
   "fmt": {
     "exclude": ["clay", "build"]
   },
