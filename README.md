@@ -1,7 +1,5 @@
 # clayterm
 
-[![CodSpeed](https://img.shields.io/endpoint?url=https://codspeed.io/badge.json)](https://codspeed.io/bombshell-dev/clayterm?utm_source=badge)
-
 A low-level, platform-independent terminal renderer and event parser for
 JavaScript. You can use clayterm directly, or as the foundation for your own
 framework.
@@ -151,25 +149,28 @@ Pass pointer state to `render()` to have clayterm do hit detection and return
 pointer events in addition to the byte sequence.
 
 ```typescript
-let { output, events } = term.render([
-  open("root", {
-    layout: { width: grow(), height: grow(), direction: "ltr" },
-  }),
-  open("sidebar", {
-    layout: { width: fixed(20), height: grow() },
-    bg: rgba(30, 30, 40),
-  }),
-  text("Sidebar"),
-  close(),
-  open("main", {
-    layout: { width: grow(), height: grow() },
-  }),
-  text("Main content"),
-  close(),
-  close(),
-], {
-  pointer: { x: mouseX, y: mouseY, down: mouseDown },
-});
+let { output, events } = term.render(
+  [
+    open("root", {
+      layout: { width: grow(), height: grow(), direction: "ltr" },
+    }),
+    open("sidebar", {
+      layout: { width: fixed(20), height: grow() },
+      bg: rgba(30, 30, 40),
+    }),
+    text("Sidebar"),
+    close(),
+    open("main", {
+      layout: { width: grow(), height: grow() },
+    }),
+    text("Main content"),
+    close(),
+    close(),
+  ],
+  {
+    pointer: { x: mouseX, y: mouseY, down: mouseDown },
+  },
+);
 
 for (let event of events) {
   // { type: "pointerenter", id: "sidebar" }
