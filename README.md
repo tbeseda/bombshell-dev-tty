@@ -21,7 +21,7 @@ computation.
 will run anywhere JavaScript runs with no native dependencies, and no build step
 for consumers.
 
-### Demo
+### Examples
 
 The application in this demo uses Clayterm for all layout and input parsing
 
@@ -30,14 +30,14 @@ The application in this demo uses Clayterm for all layout and input parsing
 The input parser decodes raw terminal bytes into structured events. Here you can
 see each key event as the string "hello world" is typed.
 
-![Keyboard events demo](demo/keyboard-key-events.gif)
+![Keyboard events demo](examples/keyboard/keyboard-key-events.gif)
 
 #### Pointer Events
 
 Here we see hover styles applied to UI elements in response to the pointer
 state. Clay drives the hit testing; no manual coordinate math required.
 
-![Pointer events demo](demo/keyboard-pointer-events.gif)
+![Pointer events demo](examples/keyboard/keyboard-pointer-events.gif)
 
 ## Architecture
 
