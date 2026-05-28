@@ -75,9 +75,16 @@ const Border = Type.Object({
   bottom: Type.Optional(u8),
   style: Type.Optional(
     Type.Union([
-      Type.Literal("single"),
+      Type.Literal("none"),
+      Type.Literal("hidden"),
+      Type.Literal("solid"),
       Type.Literal("double"),
-      Type.Literal("bold"),
+      Type.Literal("dotted"),
+      Type.Literal("dashed"),
+      Type.Literal("groove"),
+      Type.Literal("ridge"),
+      Type.Literal("inset"),
+      Type.Literal("outset"),
     ]),
   ),
 });

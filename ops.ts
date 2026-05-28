@@ -88,7 +88,7 @@ export function pack(
         if (op.layout) mask |= PROP_LAYOUT;
         if (op.bg !== undefined) mask |= PROP_BG_COLOR;
         if (op.cornerRadius) mask |= PROP_CORNER_RADIUS;
-        if (op.border) mask |= PROP_BORDER;
+        if (op.border && op.border.style !== "none" && op.border.style !== "hidden") mask |= PROP_BORDER;
         if (op.clip) mask |= PROP_CLIP;
         if (op.floating) mask |= PROP_FLOATING;
         view.setUint32(o, mask, true);
@@ -135,7 +135,7 @@ export function pack(
           o += 4;
         }
 
-        if (op.border) {
+        if (op.border && op.border.style !== "none" && op.border.style !== "hidden") {
           let b = op.border;
           view.setUint32(o, b.color, true);
           o += 4;
@@ -146,12 +146,22 @@ export function pack(
             true,
           );
           o += 4;
+          // groove/ridge/inset/outset alias to solid (terminal can't do 3D)
           const styleMap: Record<string, number> = {
-            single: 0,
+            solid:  0,
             double: 1,
-            bold: 2,
+            dotted: 2,
+            dashed: 3,
+            groove: 0,
+            ridge:  0,
+            inset:  0,
+            outset: 0,
           };
-          view.setUint32(o, styleMap[b.style ?? "single"] ?? 0, true);
+          // Pack as 4 per-side style bytes (left|right<<8|top<<16|bottom<<24).
+          // All four are the same value today; this layout reserves space for
+          // future per-side style support without a protocol change.
+          const s = styleMap[b.style ?? "solid"] ?? 0;
+          view.setUint32(o, s | (s << 8) | (s << 16) | (s << 24), true);
           o += 4;
         }
 
@@ -266,7 +276,7 @@ export interface OpenElement {
     right?: number;
     top?: number;
     bottom?: number;
-    style?: "single" | "double" | "bold";
+    style?: "none" | "hidden" | "solid" | "double" | "dotted" | "dashed" | "groove" | "ridge" | "inset" | "outset";
   };
   clip?: { horizontal?: boolean; vertical?: boolean };
   floating?: {
