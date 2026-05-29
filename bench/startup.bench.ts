@@ -20,13 +20,13 @@ bench
     await WebAssembly.compile(bytes);
   })
   .add("wasm instantiate", async () => {
-    const memory = new WebAssembly.Memory({ initial: 2 });
+    let memory = new WebAssembly.Memory({ initial: 2 });
     await WebAssembly.instantiate(compiled, {
       env: { memory },
       clay: {
         measureTextFunction() {},
         queryScrollOffsetFunction(ret: number) {
-          const v = new DataView(memory.buffer);
+          let v = new DataView(memory.buffer);
           v.setFloat32(ret, 0, true);
           v.setFloat32(ret + 4, 0, true);
         },
@@ -43,7 +43,7 @@ bench
     await createTerm({ width: 80, height: 24 });
   })
   .add("startup: createTerm + first render (80x24)", async () => {
-    const term = await createTerm({ width: 80, height: 24 });
+    let term = await createTerm({ width: 80, height: 24 });
     term.render(helloOps);
   });
 
