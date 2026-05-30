@@ -5,10 +5,10 @@ import { spawnFixture } from "./fixtures/utils.ts";
 let bench = withCodSpeed(new Bench({ name: "startup" }));
 
 bench
-  .add("createTerm", () => {
+  .add("createTerm", async () => {
     spawnFixture("create-term");
   })
-  .add("time to first render", () => {
+  .add("time to first render", async () => {
     spawnFixture("render-minimal");
   });
 
