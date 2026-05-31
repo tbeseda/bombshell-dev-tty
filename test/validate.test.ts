@@ -55,6 +55,13 @@ describe("validate", () => {
     ])).toBe(false);
   });
 
+  it("rejects negative transition duration", () => {
+    expect(validate([
+      open("x", { transition: { duration: -1, properties: ["x"] } }),
+      close(),
+    ])).toBe(false);
+  });
+
   it("rejects non-array", () => {
     expect(validate("garbage")).toBe(false);
   });

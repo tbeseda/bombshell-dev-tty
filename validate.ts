@@ -111,7 +111,7 @@ const Easing = Type.Union([
 ]);
 
 const Transition = Type.Object({
-  duration: Type.Number(),
+  duration: Type.Number({ minimum: 0 }),
   easing: Type.Optional(Easing),
   properties: Type.Array(TransitionProperty),
   interactive: Type.Optional(Type.Boolean()),
