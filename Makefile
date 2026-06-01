@@ -1,10 +1,21 @@
 CC = clang
 
-CFLAGS = --target=wasm32 -nostdlib -O2 \
-         -ffunction-sections -fdata-sections \
-         -mbulk-memory \
-         -DCLAY_IMPLEMENTATION -DCLAY_WASM \
-         -Isrc -I.
+# Per-module optimization levels. layout.wasm holds Clay_EndLayout (~33% of the
+# code and the entire render hot path); on heavy layouts its speed comes from the
+# inlining/unrolling that only -O2+ does — -Os/-Oz regress dashboard/diff-render
+# by 24-32%, so layout must stay -O2. input.wasm is the trie + input state machine,
+# whose benchmarks are insensitive to opt level, so it is built -Oz for size.
+# Override on the command line to A/B on CodSpeed, e.g. `make LAYOUT_OPT=-O3`.
+LAYOUT_OPT ?= -O2
+INPUT_OPT  ?= -Oz
+
+CFLAGS_BASE = --target=wasm32 -nostdlib \
+              -ffunction-sections -fdata-sections \
+              -mbulk-memory \
+              -Isrc -I.
+
+LAYOUT_CFLAGS = $(CFLAGS_BASE) $(LAYOUT_OPT) -DCLAY_IMPLEMENTATION -DCLAY_WASM
+INPUT_CFLAGS  = $(CFLAGS_BASE) $(INPUT_OPT)
 
 LDFLAGS_COMMON = -Wl,--no-entry \
                  -Wl,--import-memory \
@@ -54,10 +65,10 @@ all: layout.wasm input.wasm layout.wasm.ts input.wasm.ts
 	@echo "Built input.wasm  ($$(wc -c < input.wasm) bytes raw, $$(gzip -c input.wasm | wc -c) bytes gzip)"
 
 layout.wasm: $(DEPS)
-	$(CC) $(CFLAGS) $(LAYOUT_LDFLAGS) -o $@ src/module-layout.c
+	$(CC) $(LAYOUT_CFLAGS) $(LAYOUT_LDFLAGS) -o $@ src/module-layout.c
 
 input.wasm: $(DEPS)
-	$(CC) $(filter-out -DCLAY_IMPLEMENTATION -DCLAY_WASM, $(CFLAGS)) $(INPUT_LDFLAGS) -o $@ src/module-input.c
+	$(CC) $(INPUT_CFLAGS) $(INPUT_LDFLAGS) -o $@ src/module-input.c
 
 layout.wasm.ts: layout.wasm
 	deno run --allow-read --allow-write tasks/bundle-wasm.ts layout.wasm layout.wasm.ts
