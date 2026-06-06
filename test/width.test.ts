@@ -5,7 +5,7 @@ import { print } from "./print.ts";
 
 const decode = (b: Uint8Array) => new TextDecoder().decode(b);
 
-describe("wide-char trailing overlay", () => {
+describe("wide characters", () => {
   let term: Term;
   beforeEach(async () => {
     term = await createTerm({ width: 12, height: 1 });
@@ -30,7 +30,7 @@ describe("wide-char trailing overlay", () => {
       12,
       1,
     );
-    // pins: half-overwritten 你 collapses to a space, X lands at col 1, 好 untouched at 2-3.
+    // half-overwritten 你 collapses to a space, X lands at col 1, 好 untouched at 2-3.
     expect(out).toBe(" X好         ");
   });
 
@@ -48,7 +48,7 @@ describe("wide-char trailing overlay", () => {
         close(),
       ]).output,
     );
-    // pins: the overlay glyph reaches the byte stream rather than being swallowed by the column skip.
+    // the overlay glyph reaches the byte stream rather than being swallowed by the column skip.
     expect(ansi).toContain("X");
   });
 });
