@@ -79,6 +79,13 @@ describe("validate", () => {
     expect(validate([text("hi", { color: 1.5 })])).toBe(false);
   });
 
+  it("rejects fractional border background color", () => {
+    expect(validate([
+      open("x", { border: { color: 0xFF0000, bg: 1.5, left: 1 } }),
+      close(),
+    ])).toBe(false);
+  });
+
   it("accepts structured floating attach points", () => {
     expect(validate([
       open("x", {
