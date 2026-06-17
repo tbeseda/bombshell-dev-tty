@@ -10,7 +10,7 @@ It covers:
 - building the local development artifacts, and
 - verifying that the repo is ready for development.
 
-It does **not** cover npm/JSR packaging or publishing.
+It does **not** cover npm packaging or publishing.
 
 ## What the local build produces
 
@@ -290,7 +290,5 @@ This document is intentionally limited to local source builds for development.
 Out of scope:
 
 - `deno task build:npm`
-- `deno task build:jsr`
 - `npm publish`
-- `deno publish`
 - release tagging and package publishing workflows
