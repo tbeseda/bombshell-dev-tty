@@ -379,6 +379,13 @@ This allows the caller to render into a region of the terminal starting at a row
 other than the top. The offset is applied to all emitted cursor positions. When
 omitted, it defaults to 1.
 
+A horizontal run of identical changed cells MAY be encoded as a single glyph
+followed by REP (`CSI Ps b`, repeat the preceding graphic character `Ps` times)
+when doing so reduces the byte count. This is a content-encoding optimization
+only; the rendered grid is identical to emitting each cell individually. The
+precise encoding (the run threshold, REP versus inline repetition) is part of
+the implementation surface and is not locked down by this specification.
+
 #### 8.2.2 Line mode
 
 When `mode` is `"line"`, the renderer emits all cells as newline-separated rows
@@ -610,7 +617,8 @@ terminal-management operations:
 
 These are the caller's responsibility. The renderer's output contains only the
 escape sequences needed to render the frame content (cursor positioning for cell
-writes, SGR attributes for styling, and UTF-8 text).
+writes, SGR attributes for styling, UTF-8 text, and run-length encoding of
+repeated cells per §8.2.1).
 
 ### 11.3 The renderer does not own application lifecycle
 
